@@ -5,6 +5,7 @@ const data_generator = require('./scripts/data-generator')
 const MongoClient = require("mongodb").MongoClient
 
 const app = express()
+require('dotenv').config({path: 'src/variables.env'})
 
 //API Riot
 const api = "RGAPI-1be70641-21aa-4e8f-95c8-56124c9584db"
@@ -12,7 +13,7 @@ exports.api = api
 
 //Base de datos MongoDB
 let database;
-const url = "mongodb://0.0.0.0:27017"
+const url = process.env.DB_URL
 MongoClient.connect(url, (err, db) => {
     if (err) {
         console.log("No se puede conectar a la base de datos")
