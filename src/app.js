@@ -8,7 +8,7 @@ const app = express()
 require('dotenv').config({path: 'src/variables.env'})
 
 //API Riot
-const api = "RGAPI-1be70641-21aa-4e8f-95c8-56124c9584db"
+const api = process.env.RIOT_API_KEY
 exports.api = api
 
 //Base de datos MongoDB
