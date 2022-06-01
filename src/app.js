@@ -11,6 +11,8 @@ require('dotenv').config({path: 'src/variables.env'})
 const api = process.env.RIOT_API_KEY
 exports.api = api
 
+const getRandomMatches = process.env.GET_RANDOM_MATCHES
+
 //Base de datos MongoDB
 let database;
 const url = process.env.DB_URL
@@ -22,7 +24,9 @@ MongoClient.connect(url, (err, db) => {
         console.log("Conectado a la base de datos")
         database = db.db("lol")
         //Funcion de busqueda y guardado de partidas
-        setInterval(data_generator.intervalFunc, 5000);
+        if (getRandomMatches==true){
+            setInterval(data_generator.intervalFunc, 5000);
+        }
     }
 })
 function getDatabase() {
