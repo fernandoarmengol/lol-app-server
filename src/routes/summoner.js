@@ -11,18 +11,28 @@ router.get('/summoner/:name', (req, res) => {
         });
         resp.on('end', () => {
             let json = JSON.parse(data)
-            https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
-                let data2 = '';
-                resp2.on('data', (chunk) => {
-                    data2 += chunk;
+            if (!json.hasOwnProperty('status')){
+                https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
+                    let data2 = '';
+                    resp2.on('data', (chunk) => {
+                        data2 += chunk;
+                    });
+                    resp2.on('end', () => {
+                        json.history = []
+                        for(var match in JSON.parse(data2)){
+                            json.history.push(JSON.parse(data2)[match].toString())
+                        }
+                        console.log(json)
+                        res.send(json);
+                    });
+                }).on("error", (err) => {
+                    return "Error: " + err.message;
                 });
-                resp2.on('end', () => {
-                    json.history = JSON.parse(data2)
-                    res.send(json);
-                });
-            }).on("error", (err) => {
-                return "Error: " + err.message;
-            });
+            } else {
+                json.history = ["404"]
+                console.log(json)
+                res.send(json);
+            }
         });
     }).on("error", (err) => {
         res.send("Error: " + err.message);
@@ -36,6 +46,10 @@ router.get('/maestry/:id', (req, res) => {
             data += chunk;
         });
         resp.on('end', () => {
+            json = []
+            for(var maestry in JSON.parse(data)){
+                json.push(JSON.parse(data)[maestry].toString())
+            }
             res.send(data);
         });
     }).on("error", (err) => {
@@ -50,7 +64,8 @@ router.get('/match/:matchid', (req, res) => {
             data += chunk;
         });
         resp.on('end', () => {
-            res.send(data);
+            console.log(JSON.parse(data))
+            res.send(JSON.parse(data));
         });
     }).on("error", (err) => {
         return "Error: " + err.message;
