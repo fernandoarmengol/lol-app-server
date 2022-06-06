@@ -57,6 +57,20 @@ router.get('/maestry/:id', (req, res) => {
     });
 })
 
+router.get('/elo/:id', (req, res) => {
+    https.get(('https://euw1.api.riotgames.com/lol/league/v4/entries/by-summoner/' + req.params.id + '?api_key=' + app.api), (resp) => {
+        let data = '';
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+        resp.on('end', () => {
+            res.send(JSON.parse(data));
+        });
+    }).on("error", (err) => {
+        return "Error: " + err.message;
+    });
+})
+
 router.get('/match/:matchid', (req, res) => {
     https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/' + req.params.matchid + '?api_key=' + app.api), (resp) => {
         let data = '';
