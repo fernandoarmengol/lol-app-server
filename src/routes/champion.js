@@ -120,78 +120,84 @@ router.get('/matchesFromChamp/:champ', async (req, res) => {
         });
     });
 
+    
+
     var json = new Object();
 
-    json.winRate = (win / matches.length * 100).toFixed(2);
-    json.pickRate = (matches.length / await collection.count() * 100).toFixed(2);
-
-    //JSON counter
-    for (var key in goodAgainst) {
-        let num = (totalEachChamp[key] + goodAgainst[key]) / (totalEachChamp[key] * 2) * 100
-        if (num >= 70 || num <= 30) {
-            delete goodAgainst[key]
-            key--
+    if (matches.length >= 1) {
+        json.winRate = (win / matches.length * 100).toFixed(2);
+        json.pickRate = (matches.length / await collection.count() * 100).toFixed(2);
+    
+        //JSON counter
+        for (var key in goodAgainst) {
+            let num = (totalEachChamp[key] + goodAgainst[key]) / (totalEachChamp[key] * 2) * 100
+            if (num >= 70 || num <= 30) {
+                delete goodAgainst[key]
+                key--
+            }
         }
+        let bestFive = getFirstNElements(4, goodAgainst)
+        let worstFive = getLastNElements(4, goodAgainst)
+        json.bestFive = []
+        for (var key in bestFive) {
+            json.bestFive.push({
+                id: bestFive[key].name,
+                value: ((totalEachChamp[bestFive[key].name] + bestFive[key].value) / (totalEachChamp[bestFive[key].name] * 2) * 100).toFixed(2)
+            })
+        }
+        json.worstFive = []
+        for (var key in worstFive) {
+            json.worstFive.push({
+                id: worstFive[key].name,
+                value: ((totalEachChamp[worstFive[key].name] + worstFive[key].value) / (totalEachChamp[worstFive[key].name] * 2) * 100).toFixed(2)
+            })
+        }
+        //Algoritmo mas preciso cuando hay mas partidas pero menos al haber pocas
+        // let finalWR = []
+        // for (var key in goodAgainst) {
+        //     finalWR.push({ name: key, value: (totalEachChamp[key] + goodAgainst[key]) / (totalEachChamp[key] * 2) * 100 })
+        // }
+        // console.log(finalWR.sort())
+    
+        //JSON otherItem
+        const finalBoots = getFirstNElements(2, hashMapBoots)
+        json.boots = [
+            { value: finalBoots[0].name, porcentaje: (finalBoots[0].value / matches.length * 100).toFixed(2) },
+            { value: finalBoots[1].name, porcentaje: (finalBoots[1].value / matches.length * 100).toFixed(2) }
+        ]
+    
+        //JSON otherItem
+        const finalMythics = getFirstNElements(2, hashMapMythics)
+        json.mythics = [
+            { value: finalMythics[0].name, porcentaje: (finalMythics[0].value / matches.length * 100).toFixed(2) },
+            { value: finalMythics[1].name, porcentaje: (finalMythics[1].value / matches.length * 100).toFixed(2) }
+        ]
+    
+        //JSON otherItem
+        const finalOtherItem = getFirstNElements(3, hashMapOther)
+        json.otherItem = [
+            { value: finalOtherItem[0].name, porcentaje: (finalOtherItem[0].value / matches.length * 100).toFixed(2) },
+            { value: finalOtherItem[1].name, porcentaje: (finalOtherItem[1].value / matches.length * 100).toFixed(2) },
+            { value: finalOtherItem[2].name, porcentaje: (finalOtherItem[2].value / matches.length * 100).toFixed(2) }
+        ]
+    
+        //JSON Spells
+        const finalSpells = getFirstNElements(3, hashMapSpells)
+        json.spells = [
+            { value: finalSpells[0].name, porcentaje: (finalSpells[0].value / matches.length * 100).toFixed(2) },
+            { value: finalSpells[1].name, porcentaje: (finalSpells[1].value / matches.length * 100).toFixed(2) },
+            { value: finalSpells[2].name, porcentaje: (finalSpells[2].value / matches.length * 100).toFixed(2) },
+        ]
+    
+        //JSON Runas
+        const finalRunes = getFirstNElements(2, hashMapRunes)
+        json.runes = [
+            { value: finalRunes[0].name, porcentaje: (finalRunes[0].value / matches.length * 100).toFixed(2) },
+            { value: finalRunes[1].name, porcentaje: (finalRunes[1].value / matches.length * 100).toFixed(2) }
+        ]
+    } else {
+        json.bestFive = []
     }
-    let bestFive = getFirstNElements(4, goodAgainst)
-    let worstFive = getLastNElements(4, goodAgainst)
-    json.bestFive = []
-    for (var key in bestFive) {
-        json.bestFive.push({
-            id: bestFive[key].name,
-            value: ((totalEachChamp[bestFive[key].name] + bestFive[key].value) / (totalEachChamp[bestFive[key].name] * 2) * 100).toFixed(2)
-        })
-    }
-    json.worstFive = []
-    for (var key in worstFive) {
-        json.worstFive.push({
-            id: worstFive[key].name,
-            value: ((totalEachChamp[worstFive[key].name] + worstFive[key].value) / (totalEachChamp[worstFive[key].name] * 2) * 100).toFixed(2)
-        })
-    }
-    //Algoritmo mas preciso cuando hay mas partidas pero menos al haber pocas
-    // let finalWR = []
-    // for (var key in goodAgainst) {
-    //     finalWR.push({ name: key, value: (totalEachChamp[key] + goodAgainst[key]) / (totalEachChamp[key] * 2) * 100 })
-    // }
-    // console.log(finalWR.sort())
-
-    //JSON otherItem
-    const finalBoots = getFirstNElements(2, hashMapBoots)
-    json.boots = [
-        { value: finalBoots[0].name, porcentaje: (finalBoots[0].value / matches.length * 100).toFixed(2) },
-        { value: finalBoots[1].name, porcentaje: (finalBoots[1].value / matches.length * 100).toFixed(2) }
-    ]
-
-    //JSON otherItem
-    const finalMythics = getFirstNElements(2, hashMapMythics)
-    json.mythics = [
-        { value: finalMythics[0].name, porcentaje: (finalMythics[0].value / matches.length * 100).toFixed(2) },
-        { value: finalMythics[1].name, porcentaje: (finalMythics[1].value / matches.length * 100).toFixed(2) }
-    ]
-
-    //JSON otherItem
-    const finalOtherItem = getFirstNElements(3, hashMapOther)
-    json.otherItem = [
-        { value: finalOtherItem[0].name, porcentaje: (finalOtherItem[0].value / matches.length * 100).toFixed(2) },
-        { value: finalOtherItem[1].name, porcentaje: (finalOtherItem[1].value / matches.length * 100).toFixed(2) },
-        { value: finalOtherItem[2].name, porcentaje: (finalOtherItem[2].value / matches.length * 100).toFixed(2) }
-    ]
-
-    //JSON Spells
-    const finalSpells = getFirstNElements(3, hashMapSpells)
-    json.spells = [
-        { value: finalSpells[0].name, porcentaje: (finalSpells[0].value / matches.length * 100).toFixed(2) },
-        { value: finalSpells[1].name, porcentaje: (finalSpells[1].value / matches.length * 100).toFixed(2) },
-        { value: finalSpells[2].name, porcentaje: (finalSpells[2].value / matches.length * 100).toFixed(2) },
-    ]
-
-    //JSON Runas
-    const finalRunes = getFirstNElements(2, hashMapRunes)
-    json.runes = [
-        { value: finalRunes[0].name, porcentaje: (finalRunes[0].value / matches.length * 100).toFixed(2) },
-        { value: finalRunes[1].name, porcentaje: (finalRunes[1].value / matches.length * 100).toFixed(2) }
-    ]
 
     console.log(json)
     //res.send(JSON.stringify(json))
