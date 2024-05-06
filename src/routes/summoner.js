@@ -12,18 +12,38 @@ router.get('/summoner/:name', (req, res) => {
         resp.on('end', () => {
             let json = JSON.parse(data)
             if (!json.hasOwnProperty('status')){
-                https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
-                    let data2 = '';
-                    resp2.on('data', (chunk) => {
-                        data2 += chunk;
+                https.get(('https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-puuid/' + json.puuid + '?api_key=' + app.api), (resp3) => {
+                    let data_summonerByID = '';
+                    resp3.on('data', (chunk) => {
+                        data_summonerByID += chunk;
                     });
-                    resp2.on('end', () => {
-                        json.history = []
-                        for(var match in JSON.parse(data2)){
-                            json.history.push(JSON.parse(data2)[match].toString())
-                        }
+                    resp3.on('end', () => {
+                        let summonerByPUUID = json.parse(data_summonerByID);
+
+                        json.push(summonerByPUUID.id);
+                        json.push(summonerByPUUID.summonerLevel);
+                        json.push(summonerByPUUID.accountId);
+                        json.push(summonerByPUUID.profileIconId);
+                        json.push(summonerByPUUID.revisionDate);
+                        json.push(summonerByPUUID.summonerLevel);
+
                         console.log(json)
-                        res.send(json);
+                        https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
+                            let data2 = '';
+                            resp2.on('data', (chunk) => {
+                                data2 += chunk;
+                            });
+                            resp2.on('end', () => {
+                                json.history = []
+                                for(var match in JSON.parse(data2)){
+                                    json.history.push(JSON.parse(data2)[match].toString())
+                                }
+                                console.log(json)
+                                res.send(json);
+                            });
+                        }).on("error", (err) => {
+                            return "Error: " + err.message;
+                        });
                     });
                 }).on("error", (err) => {
                     return "Error: " + err.message;
