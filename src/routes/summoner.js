@@ -11,23 +11,27 @@ router.get('/summoner/:name', (req, res) => {
         });
         resp.on('end', () => {
             let json = JSON.parse(data)
-            if (!json.hasOwnProperty('status')){
-                https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
-                    let data2 = '';
-                    resp2.on('data', (chunk) => {
-                        data2 += chunk;
-                    });
-                    resp2.on('end', () => {
-                        json.history = []
-                        for(var match in JSON.parse(data2)){
-                            json.history.push(JSON.parse(data2)[match].toString())
-                        }
-                        console.log(json)
-                        res.send(json);
-                    });
-                }).on("error", (err) => {
-                    return "Error: " + err.message;
-                });
+            if (!json.hasOwnProperty('puuid')){
+                res.send(json.history);
+
+
+
+                // https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
+                //     let data2 = '';
+                //     resp2.on('data', (chunk) => {
+                //         data2 += chunk;
+                //     });
+                //     resp2.on('end', () => {
+                //         json.history = []
+                //         for(var match in JSON.parse(data2)){
+                //             json.history.push(JSON.parse(data2)[match].toString())
+                //         }
+                //         console.log(json)
+                //         res.send(json);
+                //     });
+                // }).on("error", (err) => {
+                //     return "Error: " + err.message;
+                // });
             } else {
                 json.history = ["404"]
                 console.log(json)
