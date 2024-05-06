@@ -20,12 +20,12 @@ router.get('/summoner/:name', (req, res) => {
                     resp3.on('end', () => {
                         let summonerByPUUID = JSON.parse(data_summonerByID);
 
-                        json.id(summonerByPUUID.id);
-                        json.summonerLevel(summonerByPUUID.summonerLevel);
-                        json.accountId(summonerByPUUID.accountId);
-                        json.profileIconId(summonerByPUUID.profileIconId);
-                        json.revisionDate(summonerByPUUID.revisionDate);
-                        json.summonerLevel(summonerByPUUID.summonerLevel);
+                        json.id = summonerByPUUID.id;
+                        json.summonerLevel = summonerByPUUID.summonerLevel;
+                        json.accountId = summonerByPUUID.accountId;
+                        json.profileIconId = summonerByPUUID.profileIconId;
+                        json.revisionDate = summonerByPUUID.revisionDate;
+                        json.summonerLevel = summonerByPUUID.summonerLevel;                       
 
                         console.log(json)
                         https.get(('https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/' + json.puuid + '/ids?start=0&count=20&api_key=' + app.api), (resp2) => {
