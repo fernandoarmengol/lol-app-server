@@ -4,7 +4,7 @@ const https = require('https')
 const app = require('../app')
 
 router.get('/summoner/:name', (req, res) => {
-    https.get(('https://euw1.api.riotgames.com/lol/summoner/v4/summoners/by-name/' + req.params.name + '?api_key=' + app.api), (resp) => {
+    https.get(('https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/' + req.params.name + '?api_key=' + app.api), (resp) => {
         let data = '';
         resp.on('data', (chunk) => {
             data += chunk;
