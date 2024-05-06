@@ -18,7 +18,7 @@ router.get('/summoner/:name', (req, res) => {
                         data_summonerByID += chunk;
                     });
                     resp3.on('end', () => {
-                        let summonerByPUUID = json.parse(data_summonerByID);
+                        let summonerByPUUID = JSON.parse(data_summonerByID);
 
                         json.id(summonerByPUUID.id);
                         json.summonerLevel(summonerByPUUID.summonerLevel);
